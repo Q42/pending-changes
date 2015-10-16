@@ -1,6 +1,6 @@
 var __TOTAL_PENDING_CHANGES__ = '__TOTAL_PENDING_CHANGES__';
 
-class PendingChanges {
+PendingChanges = class PendingChanges {
     constructor(collection) {
         if (! (collection instanceof Mongo.Collection) )
             throw new Error('collection must be a Mongo.Collection');
@@ -55,4 +55,4 @@ class PendingChanges {
     }
 }
 
-this.PendingChanges = PendingChanges;
+PendingChanges = PendingChanges;
