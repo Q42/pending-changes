@@ -18,7 +18,7 @@ var pendingChanges = new PendingChanges(test);
 ### Read out the current status reactively
 ```
 Template.myTemplate.helpers({
-	hasPendingChanges function(documentId) {
+	hasPendingChanges: function(documentId) {
 		return pendingChanges.get(documentId) > 0;
 	}
 })
