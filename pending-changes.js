@@ -41,9 +41,7 @@ PendingChanges = class PendingChanges {
         if (!this._pendingChanges.get(id))
             throw new Error('cannot decrease pending writes for id: ' + id);
 
-        setTimeout(() =>
         this._pendingChanges.set(id, this._pendingChanges.get(id) - 1)
-            , 1000);
     }
 
     get(id) {
