@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.2.0.4-logging.0');
   api.use('ecmascript');
-  api.use('matb33:collection-hooks');
+  api.use('matb33:collection-hooks@0.7.0');
 
   api.addFiles('pending-changes.js', ['client']);
 
