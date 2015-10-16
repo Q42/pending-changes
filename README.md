@@ -3,6 +3,11 @@ Keep track of pending changes on collections
 
 This package uses `matb33:collection-hooks` to keep track of outstanding inserts/updates and removes. Internally, it keeps a `reactive-dict` to track each modified document by id. It does that by *increasing* a number when the insert/update/remove is initiated and it *decreases* that number again when the modification is confirmed (ie. when the callback returns). When the number of outstanding modifications reaches 0, you know that there are no pending changes anymore.
 
+## Install
+
+`$ meteor add q42:pending-changes`
+
+## Usage 
 ### Create the monitor 
 ```
 var test = new Mongo.Collection('test'); 
