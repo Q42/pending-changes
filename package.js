@@ -1,6 +1,6 @@
 Package.describe({
   name: 'q42:pending-changes',
-  version: '0.0.2',
+  version: '0.0.3',
   summary: 'Keep track of pending changes on collections',
   git: 'https://github.com/Q42/pending-changes',
   documentation: 'README.md'
