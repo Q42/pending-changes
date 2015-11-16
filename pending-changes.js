@@ -1,3 +1,13 @@
+/*
+
+TODO
+    - move total out of the dictionary
+
+ */
+
+
+
+
 var __TOTAL_PENDING_CHANGES__ = '__TOTAL_PENDING_CHANGES__';
 
 PendingChanges = class PendingChanges {
@@ -21,14 +31,18 @@ PendingChanges = class PendingChanges {
             doc._id = Random.id();
 
         //console.log('before write', doc._id);
+
         this._incPendingChanges(doc._id);
         this._incPendingChanges(__TOTAL_PENDING_CHANGES__);
     }
 
     _afterChange(userId, doc) {
         //console.log('after write', doc._id);
-        this._decPendingChanges(doc._id);
-        this._decPendingChanges(__TOTAL_PENDING_CHANGES__);
+
+        setTimeout(() => {
+            this._decPendingChanges(doc._id);
+            this._decPendingChanges(__TOTAL_PENDING_CHANGES__);
+        }, 1000);
     }
     _incPendingChanges(id) {
         if (this._pendingChanges.get(id))
@@ -51,6 +65,16 @@ PendingChanges = class PendingChanges {
     getTotal() {
         return this._pendingChanges.get(__TOTAL_PENDING_CHANGES__);
     }
-}
+};
+
 
 PendingChanges = PendingChanges;
+
+
+var monitors = {};
+
+Mongo.Collection.prototype.hasPendingChanges = function(documentId) {
+    var m = monitors[this._name] ?  monitors[this._name] : monitors[this._name] = new PendingChanges(this);
+
+    return m.get(documentId === undefined || documentId === null ? __TOTAL_PENDING_CHANGES__ : documentId);
+};
