@@ -1,12 +1,3 @@
-/*
-
-changes v0.0.4:
-
- - move total out of the dictionary and use a ReactiveVar instead
- - add single api extension to Mongo.Collection
- - log warning if document is not trackable (no _id)
-
- */
 
 PendingChanges = class PendingChanges {
     constructor(collection) {
