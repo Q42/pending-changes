@@ -1,7 +1,7 @@
 # q42:pending-changes
 Let's your know when there are pending changes (inserts/updates and removes) on individual documents and collections as a whole. ie. when the change hasn't been confirmed by the server yet.
 
-See this [demo](http://demo-pending-changes.meteor.com/).
+See this [demo](http://demo-pending-changes.meteor.com/), which has an artificially induced delay of 3 seconds.
 
 ## Install
 
@@ -9,7 +9,7 @@ See this [demo](http://demo-pending-changes.meteor.com/).
 
 ## Usage 
 
-Say you hava a collection of tasks:
+Say you have a collection of tasks:
 
 ```
 Tasks = new Mongo.Collection('tasks');
