@@ -64,7 +64,7 @@ PendingChanges = class PendingChanges {
     }
 };
 
-var monitors = {};
+var monitors = PendingChanges._monitors = {};
 
 Mongo.Collection.prototype.hasPendingChanges = function(documentId) {
     var m = monitors[this._name] ?  monitors[this._name] : monitors[this._name] = new PendingChanges(this);
