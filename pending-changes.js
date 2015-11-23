@@ -1,12 +1,12 @@
 /*
 
-TODO
-    - move total out of the dictionary
+changes v0.0.4:
+
+ - move total out of the dictionary and use a ReactiveVar instead
+ - add single api extension to Mongo.Collection
+ - log warning if document is not trackable (no _id)
 
  */
-
-
-
 
 PendingChanges = class PendingChanges {
     constructor(collection) {
@@ -26,8 +26,9 @@ PendingChanges = class PendingChanges {
     }
 
     _beforeChange(userId, doc) {
-        if (!doc._id)
-            doc._id = Random.id();
+        if (!_.has(doc, '_id')) {
+            console.warn("To track changes an _id field is required");
+        }
 
         //console.log('before write', doc._id);
 
@@ -50,10 +51,8 @@ PendingChanges = class PendingChanges {
     }
 
     _decPendingChanges(id) {
-        if (!this._pendingChanges.get(id))
-            throw new Error('cannot decrease pending writes for id: ' + id);
-
-        this._pendingChanges.set(id, this._pendingChanges.get(id) - 1)
+        if (this._pendingChanges.get(id))
+            this._pendingChanges.set(id, this._pendingChanges.get(id) - 1)
     }
 
     get(documentId) {
