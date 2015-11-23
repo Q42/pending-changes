@@ -1,43 +1,87 @@
-# pending-changes
-Keep track of pending changes on collections
+# q42:pending-changes
+Let's your know when there are pending changes (inserts/updates and removes) on individual documents and collections as a whole. ie. when the change hasn't been confirmed by the server yet.
 
-This package uses `matb33:collection-hooks` to keep track of outstanding inserts/updates and removes. Internally, it keeps a `reactive-dict` to track each modified document by id. It does that by *increasing* a number when the insert/update/remove is initiated and it *decreases* that number again when the modification is confirmed (ie. when the callback returns). When the number of outstanding modifications reaches 0, you know that there are no pending changes anymore.
+See this [demo](http://demo-pending-changes.meteor.com/).
 
 ## Install
 
 `$ meteor add q42:pending-changes`
 
 ## Usage 
-### Create the monitor 
-```
-var test = new Mongo.Collection('test'); 
-var pendingChanges = new PendingChanges(test);
+
+Say you hava a collection of tasks:
 
 ```
+Tasks = new Mongo.Collection('tasks');
 
-### Read out the current status reactively
-```
-Template.myTemplate.helpers({
-	hasPendingChanges function(documentId) {
-		return pendingChanges.get(documentId) > 0;
-	}
-})
 ```
 
-### API
-#### new PendingChanges()
+The tasks are displayed as a list of tasks
 
-Create a new monitor object to keep track of changes on **\<collection\>**
 
-`var changes = new PendingChanges(<collection>);`
+```
+<ul>
+  {{#each tasks}}
+    {{> task}}
+  {{/each}}
+</ul>
 
-#### PendingChanges.get(<documentId>)
-Read out the current # of pending changes for **\<document>**:
+```
 
-`changes.get(<documentId>)` *reactive source*
+```
+<template name="task">
+  <li>
+    {{text}}
+    
+    {{#if isSaving }}
+        <span style="background-color: yellow; font-size: 80%;">saving...</span>
+    {{/if}}
+  </li>
+</template>
+```
 
-#### PendingChanges.getTotal()
-Read out the current # of pending changes for all documents in the collection:
+Check if the task has pending changes:
 
-`changes.getTotal()` *reactive source*
+```
+  Template.task.helpers({
+    isSaving: function() {
+      return Tasks.hasPendingChanges(this._id);
+    }
+  });
+```
 
+## API
+
+#### \<collection\>.hasPendingChanges(\<id>)
+Check if the specified document has outstanding changes, ie updates that have not been confirmed by the server.
+
+#### \<collection\>.hasPendingChanges()
+If no id is passed, check if \<collection> as a whole has any outstanding changes, ie updates that have not been confirmed by the server.
+
+## How it works
+Internally, it keeps a `reactive-dict` to track each modified document by id. It does that by *increasing* a number when the insert/update/remove is initiated and it *decreases* that number again when the modification is confirmed (ie. when the callback returns). When the number of outstanding modifications reaches 0, you know that there are no pending changes anymore.
+
+## _id required
+This package uses the _id field to track indiviual documents. This means that to track inserts you'll need to pass an _id field when inserting. For example:
+
+```
+Tasks.insert({
+  _id : Random.id(),
+  text: text
+});
+```
+
+## Version history
+
+v0.0.4
+
+
+- `get()` and `getTotal()` have been merged into 1 `get()` method. It reports the total # of changes when `undefined` or `null` is passed
+- pending changes is only reported as a boolean instead of the # of pending changes
+- add method to Mongo.Collection: `.hasPendingChanges()` This is the only api you'll need
+- log warning if document is not trackable (no _id)
+- move total # of pending changes per collection out of the dictionary and use a ReactiveVar instead
+
+v0.0.3
+
+First working public version
