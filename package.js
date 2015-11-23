@@ -10,7 +10,8 @@ Package.onUse(function(api) {
   api.versionsFrom('1.2.0.4-logging.0');
   api.use('ecmascript');
   api.use('mongo');
-    api.use('reactive-dict');
+  api.use('reactive-var');
+  api.use('reactive-dict');
 
   api.use('matb33:collection-hooks@0.7.0');
 

@@ -8,8 +8,6 @@ TODO
 
 
 
-var __TOTAL_PENDING_CHANGES__ = '__TOTAL_PENDING_CHANGES__';
-
 PendingChanges = class PendingChanges {
     constructor(collection) {
         if (! (collection instanceof Mongo.Collection) )
@@ -17,6 +15,7 @@ PendingChanges = class PendingChanges {
 
         this._collection = collection;
         this._pendingChanges = new ReactiveDict();
+        this._totalPendingChanges = new ReactiveVar(0);
 
         this._collection.before.insert( this._beforeChange.bind(this) );
         this._collection.after .insert( this._afterChange .bind(this) );
@@ -33,20 +32,19 @@ PendingChanges = class PendingChanges {
         //console.log('before write', doc._id);
 
         this._incPendingChanges(doc._id);
-        this._incPendingChanges(__TOTAL_PENDING_CHANGES__);
+        this._totalPendingChanges.set(this._totalPendingChanges.get() + 1);
     }
 
     _afterChange(userId, doc) {
         //console.log('after write', doc._id);
 
-        setTimeout(() => {
-            this._decPendingChanges(doc._id);
-            this._decPendingChanges(__TOTAL_PENDING_CHANGES__);
-        }, 1000);
+        this._decPendingChanges(doc._id);
+        this._totalPendingChanges.set(this._totalPendingChanges.get() - 1);
     }
+
     _incPendingChanges(id) {
         if (this._pendingChanges.get(id))
-            this._pendingChanges.set(id, pendingChanges.get(id) + 1);
+            this._pendingChanges.set(id, this._pendingChanges.get(id) + 1);
 
         this._pendingChanges.set(id, 1);
     }
@@ -58,23 +56,18 @@ PendingChanges = class PendingChanges {
         this._pendingChanges.set(id, this._pendingChanges.get(id) - 1)
     }
 
-    get(id) {
-        return this._pendingChanges.get(id);
-    }
+    get(documentId) {
+        if ( documentId === undefined || documentId === null )
+            return this._totalPendingChanges.get();
 
-    getTotal() {
-        return this._pendingChanges.get(__TOTAL_PENDING_CHANGES__);
+        return this._pendingChanges.get( documentId );
     }
 };
-
-
-PendingChanges = PendingChanges;
-
 
 var monitors = {};
 
 Mongo.Collection.prototype.hasPendingChanges = function(documentId) {
     var m = monitors[this._name] ?  monitors[this._name] : monitors[this._name] = new PendingChanges(this);
 
-    return m.get(documentId === undefined || documentId === null ? __TOTAL_PENDING_CHANGES__ : documentId);
+    return m.get(documentId);
 };
